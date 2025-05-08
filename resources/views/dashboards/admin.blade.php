@@ -26,9 +26,7 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
-    <!-- Sidebar -->
     <div class="sidebar w-64 bg-white shadow-lg flex flex-col">
-        <!-- Logo -->
         <div class="p-4 border-b border-gray-200">
             <div class="flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -37,8 +35,6 @@
                 <span class="text-xl font-bold text-gray-800">LibraryMS</span>
             </div>
         </div>
-
-        <!-- User Profile -->
         <div class="p-4 border-b border-gray-200 flex items-center space-x-3">
             <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
                 <span class="text-indigo-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
@@ -49,7 +45,6 @@
             </div>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex-1 overflow-y-auto p-4 space-y-1">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 active-nav">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -95,7 +90,6 @@
             </a>
         </nav>
 
-        <!-- Logout -->
         <div class="p-4 border-t border-gray-200">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -109,7 +103,6 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
         <!-- Top Navigation -->
         <header class="bg-white shadow-sm z-10">
@@ -145,14 +138,12 @@
             </div>
         </header>
 
-        <!-- Dashboard Content -->
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
                 <p class="text-gray-600">Welcome back, {{ Auth::user()->name }}! Here's what's happening today.</p>
             </div>
 
-            <!-- Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="bg-white rounded-lg shadow p-6">
                     <div class="flex items-center justify-between">
@@ -215,7 +206,6 @@
                 </div>
             </div>
 
-            <!-- Recent Activity and Quick Actions -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Recent Activity -->
                 <div class="lg:col-span-2 bg-white rounded-lg shadow overflow-hidden">
@@ -271,7 +261,6 @@
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
                 <div class="bg-white rounded-lg shadow overflow-hidden">
                     <div class="p-6 border-b border-gray-200">
                         <h2 class="text-lg font-medium text-gray-800">Quick Actions</h2>
@@ -313,7 +302,6 @@
                 </div>
             </div>
 
-            <!-- Overdue Books -->
             <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
                 <div class="p-6 border-b border-gray-200 flex items-center justify-between">
                     <h2 class="text-lg font-medium text-gray-800">Overdue Books</h2>
