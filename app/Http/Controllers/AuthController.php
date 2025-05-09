@@ -24,27 +24,29 @@ class AuthController extends Controller
             $request->session()->regenerate();
         
             // Check if email is verified
-            
             if (!Auth::user()->hasVerifiedEmail()) {
                 Auth::logout();
                 return back()->withErrors([
                     'email' => 'You need to verify your email address first.',
-                ]);
+                ])->onlyInput('email');
             }
         
-            // Role-based redirection
-            $role = Auth::user()->roleType;
-        
-            switch ($role) {
-                case 'admin':
-                    return redirect()->route('admin.dashboard');
-                case 'librarian':
-                    return redirect()->route('librarian.dashboard');
-                case 'member':
-                    return redirect()->route('member.dashboard');
-                default:
-                    return redirect('/'); // fallback
+            // Role-based redirection with authorization check
+            $user = Auth::user();
+            
+            if ($user->roleType === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            } elseif ($user->roleType === 'librarian') {
+                return redirect()->intended(route('librarian.dashboard'));
+            } elseif ($user->roleType === 'member') {
+                return redirect()->intended(route('member.dashboard'));
             }
+            
+            // Fallback for invalid roles
+            Auth::logout();
+            return back()->withErrors([
+                'email' => 'Your account has an invalid role configuration.',
+            ])->onlyInput('email');
         }
 
         return back()->withErrors([

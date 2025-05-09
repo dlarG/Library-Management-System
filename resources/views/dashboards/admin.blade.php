@@ -14,6 +14,10 @@
         }
         .sidebar {
             transition: all 0.3s ease;
+            transform: translateX(-100%);
+        }
+        .sidebar-open {
+            transform: translateX(0);
         }
         .active-nav {
             background-color: #e0e7ff;
@@ -23,19 +27,48 @@
         .active-nav svg {
             color: #4f46e5;
         }
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+        }
+        .overlay-open {
+            display: block;
+        }
+        @media (min-width: 768px) {
+            .sidebar {
+                transform: translateX(0);
+            }
+            .overlay {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
+    <!-- Mobile overlay -->
+    <div class="overlay" id="overlay"></div>
+
     <!-- Sidebar -->
-    <div class="sidebar w-64 bg-white shadow-lg flex flex-col">
+    <div class="sidebar fixed md:relative z-50 w-64 bg-white shadow-lg flex flex-col" id="sidebar">
         <!-- Logo -->
-        <div class="p-4 border-b border-gray-200">
+        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
             <div class="flex items-center space-x-2">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
-                <span class="text-xl font-bold text-gray-800">LibraryMS</span>
+                <span class="text-xl font-bold text-gray-800">LibraSys</span>
             </div>
+            <button id="closeSidebar" class="md:hidden text-gray-500 hover:text-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
         </div>
 
         <!-- User Profile -->
@@ -58,7 +91,7 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="{{--{{ route('books.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100">
+            <a href="{{--{{ route('books.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
@@ -86,7 +119,7 @@
                 <span>Reports</span>
             </a>
 
-            <a href="{{--{{ route('settings') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100">
+            <a href="{{--{{ route('settings') }}0--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -114,8 +147,15 @@
         <!-- Top Navigation -->
         <header class="bg-white shadow-sm z-10">
             <div class="flex items-center justify-between px-6 py-3">
+                <!-- Mobile menu button -->
+                <button id="openSidebar" class="md:hidden text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+
                 <!-- Search Bar -->
-                <div class="flex-1 max-w-md">
+                <div class="flex-1 max-w-md mx-4">
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -147,6 +187,7 @@
 
         <!-- Dashboard Content -->
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
+            <!-- Content remains the same as previous dashboard -->
             <div class="mb-6">
                 <h1 class="text-2xl font-bold text-gray-800">Admin Dashboard</h1>
                 <p class="text-gray-600">Welcome back, {{ Auth::user()->name }}! Here's what's happening today.</p>
@@ -427,6 +468,7 @@
             <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
                 <div class="p-6 border-b border-gray-200 flex items-center justify-between">
                     <h2 class="text-lg font-medium text-gray-800">Recent Members</h2>
+                    <a href="{{--{{ route('users.index') }}--}}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View All</a>
                 </div>
                 <div class="divide-y divide-gray-200">
                     <div class="p-6 hover:bg-gray-50">
@@ -476,23 +518,54 @@
         </main>
     </div>
 
-    <!-- Mobile menu button (hidden on desktop) -->
-    <div class="md:hidden fixed bottom-4 right-4">
-        <button type="button" class="h-12 w-12 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
-    </div>
-
     <script>
-        // Simple mobile menu toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuButton = document.querySelector('.md\\:hidden button');
-            const sidebar = document.querySelector('.sidebar');
-            
-            mobileMenuButton.addEventListener('click', function() {
-                sidebar.classList.toggle('hidden');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            const openSidebarBtn = document.getElementById('openSidebar');
+            const closeSidebarBtn = document.getElementById('closeSidebar');
+
+            // Open sidebar
+            openSidebarBtn.addEventListener('click', function() {
+                sidebar.classList.add('sidebar-open');
+                overlay.classList.add('overlay-open');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Close sidebar
+            function closeSidebar() {
+                sidebar.classList.remove('sidebar-open');
+                overlay.classList.remove('overlay-open');
+                document.body.style.overflow = '';
+            }
+
+            closeSidebarBtn.addEventListener('click', closeSidebar);
+            overlay.addEventListener('click', closeSidebar);
+
+            // Close sidebar when clicking outside on mobile
+            document.addEventListener('click', function(event) {
+                if (window.innerWidth < 768 && 
+                    !sidebar.contains(event.target) && 
+                    !openSidebarBtn.contains(event.target)) {
+                    closeSidebar();
+                }
+            });
+
+            // Close sidebar when pressing Escape key
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeSidebar();
+                }
+            });
+
+            // Auto-close sidebar when clicking a nav link on mobile
+            const navLinks = document.querySelectorAll('nav a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 768) {
+                        closeSidebar();
+                    }
+                });
             });
         });
     </script>

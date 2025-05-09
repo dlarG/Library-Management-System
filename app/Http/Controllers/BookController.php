@@ -6,5 +6,7 @@ use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
-    //
+    public function viewBooks() {
+        return view('dashboard.books');
+    }
 }
