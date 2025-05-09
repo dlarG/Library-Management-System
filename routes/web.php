@@ -1,7 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\BookController;
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -17,11 +18,12 @@ use Illuminate\Http\Request;
 |
 */
 
+// Public Routes
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Guest routes (unauthenticated users only)
+// Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginview'])->name('login');
     Route::post('/login', [AuthController::class, 'login_pro'])->name('login.post');
@@ -30,7 +32,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register_pro'])->name('register.post');
 });
 
-// Logout route
+// Logout Route
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Email Verification Routes
@@ -43,13 +45,11 @@ Route::middleware('auth')->group(function () {
         $request->fulfill();
         
         // Redirect to appropriate dashboard after verification
-        $user = $request->user();
-        if ($user->roleType === 'admin') {
-            return redirect()->route('admin.dashboard')->with('verified', true);
-        } elseif ($user->roleType === 'librarian') {
-            return redirect()->route('librarian.dashboard')->with('verified', true);
-        }
-        return redirect()->route('member.dashboard')->with('verified', true);
+        return match($request->user()->roleType) {
+            'admin' => redirect()->route('admin.dashboard')->with('verified', true),
+            'librarian' => redirect()->route('librarian.dashboard')->with('verified', true),
+            default => redirect()->route('member.dashboard')->with('verified', true),
+        };
     })->middleware('signed')->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {
@@ -58,32 +58,48 @@ Route::middleware('auth')->group(function () {
     })->middleware('throttle:6,1')->name('verification.send');
 });
 
-// Role-based dashboard routes with multiple middleware protection
-Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(function () {
+// Admin Routes
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboards.admin');
-    })->name('admin.dashboard');
+        return view('admin.dashboard');
+    })->name('dashboard');
+    
+    // Book Resource Routes
+    Route::resource('books', BookController::class);
+    
+    // User Resource Routes with additional verification routes
+    Route::resource('users', UserController::class);
+    
+    // Additional user verification routes
+    Route::post('/users/{user}/send-verification', [UserController::class, 'sendVerification'])
+        ->name('users.send-verification');
+    Route::delete('/users/{user}/remove-image', [UserController::class, 'removeImage'])
+        ->name('users.remove-image');
     
     // Add other admin-only routes here
 });
 
-Route::middleware(['auth', 'verified', 'role:librarian'])->prefix('librarian')->group(function () {
+// Librarian Routes
+Route::middleware(['auth', 'verified', 'role:librarian'])->prefix('librarian')->name('librarian.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboards.librarian');
-    })->name('librarian.dashboard');
+        return view('librarian.dashboard');
+    })->name('dashboard');
     
     // Add other librarian-only routes here
 });
 
-Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->group(function () {
+// Member Routes
+Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->name('member.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('dashboards.member');
-    })->name('member.dashboard');
+        return view('member.dashboard');
+    })->name('dashboard');
     
     // Add other member-only routes here
 });
 
-// Home route (example)
-Route::get('/home', function() {
-    return view('home');
-})->middleware(['auth', 'verified']);
+// Common Authenticated Routes
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/home', function() {
+        return view('home');
+    })->name('home');
+});

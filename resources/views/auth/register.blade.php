@@ -7,7 +7,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter-Regular', sans-serif;
             background-image: url('{{ asset('imgs/background.jpg') }}');
             background-size: cover;
             background-position: center;
@@ -24,7 +24,7 @@
             transform: translateY(-50%);
         }
         @font-face {
-            font-family: 'Inter';
+            font-family: 'Inter-Regular';
             font-style: normal;
             font-weight: 400 600;
             font-display: swap;
