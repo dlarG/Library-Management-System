@@ -61,7 +61,7 @@
                 </div>
                 
                 <div class="mb-6">
-                    <h3 class="text-sm font-medium text-gray-500">Description</h3>
+                    <h3 class="text-sm font-medium text-gray-500">Book Description</h3>
                     <p class="text-gray-800 whitespace-pre-line">{{ $book->description ?? 'No description available.' }}</p>
                 </div>
                 
