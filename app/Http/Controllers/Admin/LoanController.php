@@ -1,0 +1,128 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Book;
+use App\Models\Loan;
+use App\Models\User;
+use Database\Seeders\BooksTableSeeder;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+class LoanController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+        $loans = Loan::with(['user', 'book'])
+            ->when($request->status, fn($q) => $q->where('status', $request->status))
+            ->when($request->search, fn($q) => $q->whereHas('user', function($q) use ($request) {
+                $q->where('name', 'like', "%{$request->search}%")
+                  ->orWhere('email', 'like', "%{$request->search}%");
+            }))
+            ->orderBy('due_date', 'asc')
+            ->paginate(6);
+        return view('admin.loans.index', compact('loans'));
+    }
+
+    
+    public function create()
+    {
+        $users = User::where('roleType', 'member')->get();
+        $books = Book::where('available', '>', 0)->get();
+        return view('admin.loans.create', compact('users', 'books'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'book_id' => 'required|exists:books,id',
+            'quantity' => 'required|integer|min:1',
+            'due_date' => 'required|date|after:today'
+        ]);
+
+        try {
+            $book = Book::findOrFail($request->book_id);
+            
+            if($book->available < $request->quantity) {
+                return back()
+                    ->withInput()
+                    ->withErrors(['quantity' => 'Not enough available copies. Available: ' . $book->available]);
+            }
+
+            DB::transaction(function () use ($request, $book) {
+                $loan = Loan::create([
+                    'user_id' => $request->user_id,
+                    'book_id' => $request->book_id,
+                    'quantity' => $request->quantity,
+                    'loan_date' => now(),
+                    'due_date' => $request->due_date,
+                    'status' => 'borrowed'
+                ]);
+
+                $book->available -= $request->quantity;
+                $book->save();
+            });
+
+            return redirect()->route('admin.loans.index')
+                ->with('success', 'Loan created successfully. ' . $request->quantity . ' copies of "' . $book->title . '" loaned.');
+
+        } catch (\Exception $e) {
+            return back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to create loan. Please try again.']);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    // LoanController
+    public function show(Loan $loan)
+    {
+        return view('admin.loans.show', [
+            'loan' => $loan->load(['fines.payments']),
+            'fine' => $loan->fines()->first()
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Loan $loan)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, Loan $loan)
+    {
+        if($loan->status === 'borrowed') {
+            $loan->update([
+                'return_date' => now(),
+                'status' => 'returned'
+            ]);
+            
+            // Restore book quantity
+            $loan->book->available += $loan->quantity;
+            $loan->book->save();
+        }
+
+        return back()->with('success', 'Loan marked as returned');
+    
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Loan $loan)
+    {
+        //
+    }
+}

@@ -4,8 +4,22 @@
 
 @section('content')
 @if(session('success'))
-<div class="mb-4 px-4 py-3 bg-green-100 border border-green-400 text-green-700 rounded">
-    {{ session('success') }}
+<div id="successToast" class="fixed bottom-5 right-4 w-80 bg-green-100 border border-green-400 text-green-700 rounded-lg shadow-lg p-4 opacity-0 transform transition-all duration-300 translate-y-4">
+    <div class="flex items-start justify-between">
+        <div class="flex-1">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-sm">{{ session('success') }}</p>
+            </div>
+        </div>
+        <button type="button" onclick="hideToast()" class="text-green-700 hover:text-green-900">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
 </div>
 @endif
 <div class="mb-8">
@@ -93,11 +107,22 @@
                             <div class="flex-shrink-0 h-10 w-10">
                                 @if($user->user_cover)
                                     <img class="h-10 w-10 rounded-full object-cover" src="{{ asset('storage/' . $user->user_cover) }}" alt="{{ $user->name }}">
-                                @else
-                                    <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <svg class="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
+                                    @else
+                                    @php
+                                        // Get initials (first letter of first and last name)
+                                        $names = explode(' ', $user->name);
+                                        $initial = strtoupper(substr($names[0], 0, 1));
+                                        if (count($names) > 1) {
+                                            $initial .= strtoupper(substr(end($names), 0, 1));
+                                        }
+                                        
+                                        // Generate a consistent color based on the name
+                                        $colors = ['bg-red-500', 'bg-blue-500', 'bg-green-500', 'bg-yellow-500', 'bg-purple-500', 'bg-pink-500', 'bg-indigo-500'];
+                                        $colorIndex = crc32($user->name) % count($colors);
+                                        $bgColor = $colors[$colorIndex];
+                                    @endphp
+                                    <div class="h-10 w-10 rounded-full {{ $bgColor }} flex items-center justify-center text-white font-semibold">
+                                        {{ $initial }}
                                     </div>
                                 @endif
                             </div>
@@ -198,6 +223,26 @@
 
 @push('scripts')
 <script>
+    function hideToast() {
+        const toast = document.getElementById('successToast');
+        if (toast) {
+            toast.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => toast.remove(), 300);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const toast = document.getElementById('successToast');
+        if (toast) {
+            // Trigger reflow to apply initial styles
+            toast.offsetHeight; // This forces a reflow
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            // Auto-hide after 5 seconds
+            setTimeout(hideToast, 5000);
+        }
+    });
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('searchInput');
     const roleFilter = document.getElementById('roleFilter');

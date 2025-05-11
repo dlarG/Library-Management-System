@@ -44,7 +44,7 @@
                     </div>
                     <div>
                         <h3 class="text-sm font-medium text-gray-500">Category</h3>
-                        <p class="text-gray-800">{{ $book->category->name }}</p>
+                        <p class="text-gray-800">{{ $book->category->name ?? 'No Category' }}</p>
                     </div>
                     <div>
                         <h3 class="text-sm font-medium text-gray-500">Publication Year</h3>

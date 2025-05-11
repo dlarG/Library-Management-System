@@ -14,7 +14,7 @@ class BookController extends Controller
 {
     public function index()
     {
-        $books = Book::with(['author', 'publisher', 'category'])->latest()->paginate(10);
+        $books = Book::with(['author', 'publisher', 'category'])->latest()->paginate(6);
         return view('admin.books.index', compact('books'));
     }
 
@@ -40,6 +40,9 @@ class BookController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        // Set available equal to quantity
+        $validated['available'] = $validated['quantity'];
+
         if ($request->hasFile('cover_image')) {
             $validated['cover_image'] = $request->file('cover_image')->store('book-covers', 'public');
         }
@@ -51,6 +54,8 @@ class BookController extends Controller
 
     public function show(Book $book)
     {
+        $book->load(['author', 'publisher', 'category']);
+    
         return view('admin.books.show', compact('book'));
     }
 

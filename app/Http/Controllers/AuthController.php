@@ -70,8 +70,6 @@ class AuthController extends Controller
             'username' => ['required', 'string', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/'], // Added regex validation
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'], // Stricter email validation
             'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'], // Stronger password
-            'roleType' => ['required', 'string', 'in:member,admin,librarian'],
-            'user_cover' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // Added image upload validation
         ]);
 
         $user = User::create([
@@ -79,7 +77,6 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'roleType' => $request->roleType,
         ]);
 
         event(new Registered($user));

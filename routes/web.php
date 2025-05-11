@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\LoanController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -21,7 +24,7 @@ use Illuminate\Http\Request;
 // Public Routes
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // Authentication Routes
 Route::middleware('guest')->group(function () {
@@ -60,16 +63,19 @@ Route::middleware('auth')->group(function () {
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-    
+    Route::get('/dashboard',[Controller::class,'dashboard'])->name('dashboard');
     // Book Resource Routes
     Route::resource('books', BookController::class);
     
     // User Resource Routes with additional verification routes
     Route::resource('users', UserController::class);
     
+    //Loan Resource routes to view loans
+    Route::resource('loans', LoanController::class);
+
+    //ROute for reports
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/print', [ReportController::class, 'print'])->name('reports.print');
     // Additional user verification routes
     Route::post('/users/{user}/send-verification', [UserController::class, 'sendVerification'])
         ->name('users.send-verification');

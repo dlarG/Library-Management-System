@@ -31,7 +31,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Active Loans</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-1">{{ rand(50, 200) }}</p>
+                    <p class="text-3xl font-bold text-gray-800 mt-1">{{ App\Models\Loan::count() }}</p>
                     <p class="text-xs text-red-500 mt-1">
                         <span class="font-medium">+{{ rand(1, 10) }}%</span> from last week
                     </p>
@@ -149,7 +149,7 @@
                     </div>
                     <span>Add New Book</span>
                 </a>
-                <a href="{{--{{ route('loans.create') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-200">
+                <a href="{{ route('admin.loans.create') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-200">
                     <div class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
@@ -157,7 +157,7 @@
                     </div>
                     <span>Create New Loan</span>
                 </a>
-                <a href="{{--{{ route('users.create') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-200">
+                <a href="{{ route('admin.users.create')}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 border border-gray-200">
                     <div class="h-10 w-10 rounded-full bg-green-50 flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -291,53 +291,40 @@
     <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
         <div class="p-6 border-b border-gray-200 flex items-center justify-between">
             <h2 class="text-lg font-medium text-gray-800">Recent Members</h2>
-            <a href="{{--{{ route('users.index') }}--}}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View All</a>
+            <a href="{{ route('admin.users.index') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View All</a>
         </div>
         <div class="divide-y divide-gray-200">
+            @foreach($recentUsers as $user)
             <div class="p-6 hover:bg-gray-50">
                 <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <span class="text-indigo-600 font-medium">J</span>
+                    <div class="flex-shrink-0 h-10 w-10 rounded-full 
+                        @php
+                            $colors = ['bg-indigo-100', 'bg-blue-100', 'bg-green-100', 'bg-yellow-100', 'bg-purple-100', 'bg-pink-100'];
+                            $textColors = ['text-indigo-600', 'text-blue-600', 'text-green-600', 'text-yellow-600', 'text-purple-600', 'text-pink-600'];
+                            $colorIndex = crc32($user->name) % count($colors);
+                        @endphp
+                        {{ $colors[$colorIndex] }} flex items-center justify-center">
+                        @php
+                            // Get initials (first letter of first and last name)
+                            $names = explode(' ', $user->name);
+                            $initial = strtoupper(substr($names[0], 0, 1));
+                            if (count($names) > 1) {
+                                $initial .= strtoupper(substr(end($names), 0, 1));
+                            }
+                        @endphp
+                        <span class="{{ $textColors[$colorIndex] }} font-medium">{{ $initial }}</span>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">Jessica Parker</p>
-                        <p class="text-sm text-gray-500 truncate">jessica@example.com</p>
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ $user->name }}</p>
+                        <p class="text-sm text-gray-500 truncate">{{ $user->email }}</p>
                     </div>
                     <div class="inline-flex items-center text-sm text-gray-500">
-                        Member since May 2023
+                        Member since {{ $user->created_at->format('M Y') }}
                     </div>
                 </div>
             </div>
-            <div class="p-6 hover:bg-gray-50">
-                <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span class="text-blue-600 font-medium">M</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">Michael Chen</p>
-                        <p class="text-sm text-gray-500 truncate">michael@example.com</p>
-                    </div>
-                    <div class="inline-flex items-center text-sm text-gray-500">
-                        Member since April 2023
-                    </div>
-                </div>
-            </div>
-            <div class="p-6 hover:bg-gray-50">
-                <div class="flex items-center space-x-4">
-                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <span class="text-green-600 font-medium">S</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">Sarah Johnson</p>
-                        <p class="text-sm text-gray-500 truncate">sarah@example.com</p>
-                    </div>
-                    <div class="inline-flex items-center text-sm text-gray-500">
-                        Member since March 2023
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
-        <!-- Other cards... -->
     </div>
 
 @endsection

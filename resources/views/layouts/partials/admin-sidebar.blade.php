@@ -3,10 +3,10 @@
     <!-- Logo -->
     <div class="p-4 border-b border-gray-200 flex justify-between items-center">
         <div class="flex items-center space-x-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            <svg class="h-8 w-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
             </svg>
-            <span class="text-xl font-bold text-gray-800">LibraSys</span>
+            <span class="ml-2 text-xl font-bold text-gray-900">LibraLynx</span>
         </div>
         <button id="closeSidebar" class="md:hidden text-gray-500 hover:text-gray-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -49,14 +49,14 @@
             <span>User Management</span>
         </a>
 
-        <a href="{{--{{ route('loans.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('loans.*') ? 'active-nav' : '' }}">
+        <a href="{{route('admin.loans.index')}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.loans.*') ? 'active-nav' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
             </svg>
             <span>Loan Management</span>
         </a>
 
-        <a href="{{--{{ route('reports.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('reports.*') ? 'active-nav' : '' }}">
+        <a href="{{ route('admin.reports.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('admin.reports.*') ? 'active-nav' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
