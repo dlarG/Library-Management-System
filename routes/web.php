@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\LoanController;
 use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
@@ -26,6 +27,8 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+
+
 // Authentication Routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginview'])->name('login');
@@ -35,10 +38,16 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register_pro'])->name('register.post');
 });
 
+
+
+
 // Logout Route
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
-// Email Verification Routes
+
+
+
+// Email Routes
 Route::middleware('auth')->group(function () {
     Route::get('/email/verify', function () {
         return view('auth.verify-email');
@@ -61,6 +70,10 @@ Route::middleware('auth')->group(function () {
     })->middleware('throttle:6,1')->name('verification.send');
 });
 
+
+
+
+
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard',[Controller::class,'dashboard'])->name('dashboard');
@@ -72,7 +85,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     
     //Loan Resource routes to view loans
     Route::resource('loans', LoanController::class);
-
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     //ROute for reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/print', [ReportController::class, 'print'])->name('reports.print');
@@ -85,6 +99,11 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     // Add other admin-only routes here
 });
 
+
+
+
+
+
 // Librarian Routes
 Route::middleware(['auth', 'verified', 'role:librarian'])->prefix('librarian')->name('librarian.')->group(function () {
     Route::get('/dashboard', function () {
@@ -94,6 +113,10 @@ Route::middleware(['auth', 'verified', 'role:librarian'])->prefix('librarian')->
     // Add other librarian-only routes here
 });
 
+
+
+
+
 // Member Routes
 Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->name('member.')->group(function () {
     Route::get('/dashboard', function () {
@@ -102,6 +125,11 @@ Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->name('
     
     // Add other member-only routes here
 });
+
+
+
+
+
 
 // Common Authenticated Routes
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -40,7 +40,6 @@ class BookController extends Controller
             'cover_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Set available equal to quantity
         $validated['available'] = $validated['quantity'];
 
         if ($request->hasFile('cover_image')) {

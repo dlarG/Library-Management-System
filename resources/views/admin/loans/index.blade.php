@@ -26,6 +26,22 @@
     <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <h2 class="text-lg font-semibold">Loan Management</h2>
         <div class="flex gap-4">
+            <div class="relative">
+                <select 
+                    id="statusFilter" 
+                    class="block appearance-none w-40 pl-4 pr-8 py-2 rounded-lg border border-gray-300 
+                           focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                           text-sm text-gray-700 bg-white"
+                    style="background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 9l6 6 6-6\"/></svg>');
+                           background-repeat: no-repeat;
+                           background-position: right 0.75rem center;
+                           background-size: 1em;">
+                    <option value="">All Statuses</option>
+                    <option value="borrowed">Borrowed</option>
+                    <option value="returned">Returned</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+            </div>
             <input type="text" id="search" placeholder="Search loans..." class="w-64 px-4 py-2 border rounded-lg">
             <a href="{{ route('admin.loans.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                 New Loan
@@ -77,14 +93,17 @@
                         <div class="relative inline-block text-left">
                             <button type="button" class="inline-flex items-center p-2 rounded-lg hover:bg-gray-100 focus:outline-none" 
                                     id="loan-options-{{ $loan->id }}" data-dropdown-toggle="dropdown-{{ $loan->id }}">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="12" cy="12" r="1.5" />
+                                    <circle cx="6" cy="12" r="1.5" />
+                                    <circle cx="18" cy="12" r="1.5" />
                                 </svg>
                             </button>
                             
                             <!-- Dropdown menu -->
-                            <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50" 
-                                 id="dropdown-{{ $loan->id }}">
+                            <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 dropdown-menu" 
+                                id="dropdown-{{ $loan->id }}"
+                                style="bottom: auto; top: unset;">
                                 <div class="py-1" role="menu">
                                     <!-- Remind Button -->
                                     <form action="{{--{{ route('admin.loans.remind', $loan) }}--}}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -226,6 +245,58 @@ document.addEventListener('click', function(e) {
         }
     });
 });
+
+const statusFilter = document.getElementById('statusFilter');
+const searchInput = document.getElementById('search');
+const loanRows = document.querySelectorAll('.loan-row');
+
+function filterLoans() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const selectedStatus = statusFilter.value.toLowerCase();
+    let hasVisibleRows = false;
+
+    loanRows.forEach(row => {
+        const user = row.dataset.user;
+        const book = row.dataset.book;
+        const loanDate = row.dataset.loanDate;
+        const dueDate = row.dataset.dueDate;
+        const status = row.dataset.status;
+
+        const matchesSearch = user.includes(searchTerm) || 
+                            book.includes(searchTerm) || 
+                            loanDate.includes(searchTerm) || 
+                            dueDate.includes(searchTerm) || 
+                            status.includes(searchTerm);
+
+        const matchesStatus = !selectedStatus || status === selectedStatus;
+
+        row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+        if (matchesSearch && matchesStatus) hasVisibleRows = true;
+    });
+
+    // Handle no results
+    const noResults = document.getElementById('noResults');
+    if (!hasVisibleRows) {
+        if (!noResults) {
+            const tr = document.createElement('tr');
+            tr.id = 'noResults';
+            tr.innerHTML = `
+                <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                    No loans found matching your criteria
+                </td>`;
+            document.querySelector('tbody').appendChild(tr);
+        }
+    } else if (noResults) {
+        noResults.remove();
+    }
+}
+
+// Event listeners
+statusFilter.addEventListener('change', filterLoans);
+searchInput.addEventListener('input', filterLoans);
+
+// Initial filter
+filterLoans();
 </script>
 @endpush
 @endsection
