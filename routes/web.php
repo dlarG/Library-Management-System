@@ -85,8 +85,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     
     //Loan Resource routes to view loans
     Route::resource('loans', LoanController::class);
-    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::put('settings', [SettingsController::class, 'update'])->name('settings.update');
     //ROute for reports
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/print', [ReportController::class, 'print'])->name('reports.print');

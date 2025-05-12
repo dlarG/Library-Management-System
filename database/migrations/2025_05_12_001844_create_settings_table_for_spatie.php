@@ -9,19 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('settings', function (Blueprint $table) {
-            $table->string('key')->primary();
-            $table->text('value')->nullable();
+            $table->id();
+            $table->string('name')->unique();  // Changed from 'key'
+            $table->string('group')->index();  // Added group column
+            $table->json('payload');           // Changed from 'value'
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
         Schema::dropIfExists('settings');
     }

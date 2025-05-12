@@ -19,7 +19,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Library Name</label>
-                    <input type="text" name="library_name" value="{{ $settings['library_name'] }}" 
+                    <input type="text" name="library_name" value="{{ $settings->library_name ?? 'LibraLynx' }}">
                            class="mt-1 block w-full rounded-lg border-gray-300">
                 </div>
                 <div>

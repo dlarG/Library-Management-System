@@ -10,6 +10,9 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
+    protected $commands = [
+        \App\Console\Commands\InitializeSettings::class,
+    ];
     protected function schedule(Schedule $schedule): void
     {
         $schedule->command('fines:calculate')->dailyAt('23:59');
@@ -24,4 +27,5 @@ class Kernel extends ConsoleKernel
 
         require base_path('routes/console.php');
     }
+    
 }
