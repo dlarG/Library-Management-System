@@ -6,6 +6,7 @@
     <title>@yield('title') | Library Management System</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
+        /* Reuse the same styles as admin */
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f9fafb;
@@ -13,17 +14,15 @@
         .sidebar {
             transition: all 0.3s ease;
             transform: translateX(-100%);
+            @apply border-r border-teal-100;
         }
         .sidebar-open {
             transform: translateX(0);
         }
-        .btn-primary {
-            @apply bg-indigo-600 hover:bg-indigo-700 text-white;
-        }
         .active-nav {
-            background-color: #e0e7ff;
+            background-color: #ccfbf1;
             color: #4f46e5;
-            border-left: 4px solid #4f46e5;
+            border-left: 4px solid #0d9488;
         }
         .active-nav svg {
             color: #4f46e5;
@@ -49,15 +48,8 @@
                 display: none !important;
             }
         }
-        @font-face {
-            font-family: 'Inter';
-            font-style: normal;
-            font-weight: 300 700;
-            font-display: swap;
-            src: url('{{ asset('fonts/Inter-VariableFont_slnt,wght.ttf') }}') format('truetype');
-        }
-        .table-header {
-            @apply bg-indigo-50 text-indigo-900;
+        .btn-primary {
+            @apply bg-teal-600 hover:bg-teal-700 text-white;
         }
     </style>
     @stack('styles')
@@ -66,13 +58,13 @@
     <!-- Mobile overlay -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Include Sidebar -->
-    @include('layouts.partials.admin-sidebar')
+    <!-- Librarian Sidebar -->
+    @include('layouts.partials.librarian-sidebar')
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Include Top Navigation -->
-        @include('layouts.partials.admin-navbar')
+        <!-- Librarian Navbar -->
+        @include('layouts.partials.librarian-navbar')
 
         <!-- Main Content Area -->
         <main class="flex-1 overflow-y-auto p-6 bg-gray-50">
@@ -80,8 +72,9 @@
         </main>
     </div>
 
-    <!-- Scripts -->
+    <!-- Reuse the same scripts -->
     <script>
+        // Same script as admin for sidebar functionality
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');

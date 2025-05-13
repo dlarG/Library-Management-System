@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Loan;
+use App\Models\Setting;
 use App\Models\User;
 use Database\Seeders\BooksTableSeeder;
 use Illuminate\Http\Request;
@@ -36,7 +37,7 @@ class LoanController extends Controller
         return view('admin.loans.create', compact('users', 'books'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Setting $settings)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
@@ -53,7 +54,15 @@ class LoanController extends Controller
                     ->withInput()
                     ->withErrors(['quantity' => 'Not enough available copies. Available: ' . $book->available]);
             }
+            $currentLoans = Loan::where('user_id', $request->user_id)
+                ->whereIn('status', ['borrowed', 'overdue'])
+                ->count();
 
+            if ($currentLoans + $request->quantity > $settings->max_books_per_user) {
+                return back()->withErrors([
+                    'error' => "User cannot borrow more than {$settings->max_books_per_user} books"
+                ]);
+            }
             DB::transaction(function () use ($request, $book) {
                 $loan = Loan::create([
                     'user_id' => $request->user_id,

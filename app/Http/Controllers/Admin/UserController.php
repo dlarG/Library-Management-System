@@ -48,10 +48,9 @@ class UserController extends Controller
             'user_cover' => $imagePath, // Save the path directly
         ]);
 
-        event(new Registered($user));
-
+        $user->sendEmailVerificationNotification();
         return redirect()->route('admin.users.index')
-            ->with('success', 'User created successfully!');
+        ->with('success', 'User created successfully! Verification email sent.');
     }
 
     public function show(User $user)

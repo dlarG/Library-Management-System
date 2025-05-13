@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Models\Loan;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -10,12 +11,18 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
+    
     protected $commands = [
         \App\Console\Commands\InitializeSettings::class,
     ];
-    protected function schedule(Schedule $schedule): void
+    // In app/Console/Kernel.php
+    protected function schedule(Schedule $schedule)
     {
-        $schedule->command('fines:calculate')->dailyAt('23:59');
+        $schedule->call(function () {
+            Loan::where('status', 'borrowed')
+                ->where('due_date', '<', now()->subDays(config('settings.grace_period')))
+                ->update(['status' => 'overdue']);
+        })->daily();
     }
 
     /**
