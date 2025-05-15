@@ -65,24 +65,18 @@ class AuthController extends Controller
         return redirect('login')->with('status','Account logged out successfully!');
     }
     public function register_pro(Request $request) {
-        $request->validate([
+        $validate = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users', 'regex:/^[a-zA-Z0-9_]+$/'], // Added regex validation
             'email' => ['required', 'string', 'email:rfc,dns', 'max:255', 'unique:users'], // Stricter email validation
             'password' => ['required', 'string', 'min:8', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/'], // Stronger password
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $validate['password'] = Hash::make($validate['password']);
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect()->route('verification.notice');
+        $user = User::create($validate);
+        $user->sendEmailVerificationNotification(); // Send verification email
+    
+        return redirect('/login')->with('status', 'Account created successfully. Please check your email for verification instructions.');
     }
 }

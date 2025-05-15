@@ -6,8 +6,6 @@
         </svg>
         <span class="text-xl font-bold text-blue-900">My Library</span>
     </div>
-
-    <!-- User Profile -->
     <div class="p-4 border-b border-blue-100 flex items-center space-x-3">
         <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
             <span class="text-blue-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
