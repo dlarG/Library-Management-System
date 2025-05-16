@@ -40,7 +40,20 @@
                                 Available copies: {{ $book->available }}
                             </span>
                         </div>
-                        <form action="{{--{{ route('member.wishlist.store', $book) }}--}}" method="POST">
+                        <form action="{{ route('member.loans.store', $book) }}" method="POST">
+                            @csrf
+                            <button type="submit" 
+                                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors
+                                           {{ $book->available <= 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
+                                    {{ $book->available <= 0 ? 'disabled' : '' }}>
+                                <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                {{ $book->available > 0 ? 'Borrow Book' : 'Not Available' }}
+                            </button>
+                        </form>
+            
+                        <form action="{{ route('member.wishlist.store', $book) }}" method="POST">
                             @csrf
                             @if($inWishlist)
                                 <button type="button" 

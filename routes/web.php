@@ -148,6 +148,9 @@ Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->name('
     Route::put('/profile', [\App\Http\Controllers\Member\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/member/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+
+    Route::post('/books/{book}/borrow', [\App\Http\Controllers\Member\LoanController::class, 'store'])
+         ->name('loans.store');
 });
 
 
