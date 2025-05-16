@@ -16,22 +16,32 @@ class AuthController extends Controller
     public function login_pro(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'login' => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        // Determine if login is email or username
+        $field = filter_var($credentials['login'], FILTER_VALIDATE_EMAIL) 
+            ? 'email'
+            : 'username';
+
+        $authAttempt = Auth::attempt(
+            [$field => $credentials['login'], 'password' => $credentials['password']],
+            $request->boolean('remember')
+        );
+
+        if ($authAttempt) {
             $request->session()->regenerate();
         
-            // Check if email is verified
+            // Email verification check
             if (!Auth::user()->hasVerifiedEmail()) {
                 Auth::logout();
                 return back()->withErrors([
-                    'email' => 'You need to verify your email address first.',
-                ])->onlyInput('email');
+                    'login' => 'You need to verify your email address first.',
+                ])->onlyInput('login');
             }
         
-            // Role-based redirection with authorization check
+            // Role-based redirection
             $user = Auth::user();
             
             if ($user->roleType === 'admin') {
@@ -42,16 +52,16 @@ class AuthController extends Controller
                 return redirect()->intended(route('member.dashboard'));
             }
             
-            // Fallback for invalid roles
+            // Invalid role handling
             Auth::logout();
             return back()->withErrors([
-                'email' => 'Your account has an invalid role configuration.',
-            ])->onlyInput('email');
+                'login' => 'Your account has an invalid role configuration.',
+            ])->onlyInput('login');
         }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
+            'login' => 'The provided credentials do not match our records.',
+        ])->onlyInput('login');
     }
     public function registerview() {
         return view('auth.register');

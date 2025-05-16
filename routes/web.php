@@ -141,16 +141,14 @@ Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->name('
     // Wishlist
     Route::get('/wishlist', [\App\Http\Controllers\Member\WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/{book}', [\App\Http\Controllers\Member\WishlistController::class, 'store'])->name('wishlist.store');
-    Route::delete('/wishlist/{wishlist}', [\App\Http\Controllers\Member\WishlistController::class, 'destroy'])->name('wishlist.destroy');
-    
+    Route::delete('/wishlist/{book}', [WishlistController::class, 'destroy'])
+     ->name('wishlist.destroy');
+
     // Profile
     Route::get('/profile', [\App\Http\Controllers\Member\ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [\App\Http\Controllers\Member\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/member/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-
-    Route::post('/books/{book}/borrow', [\App\Http\Controllers\Member\LoanController::class, 'store'])
-         ->name('loans.store');
+    
 });
 
 

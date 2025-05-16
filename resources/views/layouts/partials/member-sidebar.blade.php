@@ -16,7 +16,13 @@
     
     <div class="p-4 border-b border-gray-200 flex items-center space-x-3">
         <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-            <span class="text-blue-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+            @if (Auth::user()->user_cover)
+            <img src="{{ asset('storage/' . Auth::user()->user_cover) }}" 
+                    alt="{{ Auth::user()->name }}" 
+                    class="h-10 w-10 rounded-full object-cover border-2 border-blue-100">
+            @else
+                <span class="text-blue-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+            @endif
         </div>
         <div>
             <p class="font-medium text-gray-800">{{ Auth::user()->name }}</p>
@@ -48,7 +54,7 @@
             <span>Browse Books</span>
         </a>
 
-        <a href="{{--{{ route('member.wishlist') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 {{ request()->routeIs('member.wishlist.*') ? 'active-nav' : '' }}">
+        <a href="{{ route('member.wishlist.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 {{ request()->routeIs('member.wishlist.*') ? 'active-nav' : '' }}">
             <svg class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
@@ -67,7 +73,7 @@
     <div class="p-4 border-t border-blue-100">
         <form method="POST" action="{{ route('logout') }}">
             @csrf
-            <button type="submit" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 w-full">
+            <button style="cursor: pointer;" type="submit" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-blue-50 w-full">
                 <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>

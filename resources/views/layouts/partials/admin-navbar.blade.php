@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <!-- Notifications & User Menu -->
+        {{--  Notifications & User Menu  --}}
         <div class="flex items-center space-x-4">
             <button class="p-1 rounded-full text-gray-500 hover:text-gray-600 hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -29,12 +29,22 @@
             </button>
             <div class="relative">
                 <button class="flex items-center space-x-2">
-                    <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <span class="text-indigo-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
-                    </div>
-                    <span class="hidden md:inline-block font-medium">{{ Auth::user()->name }}</span>
+                    @if (Auth::user()->user_cover)
+                        <div class="h-8 w-8 rounded-full bg-indigo-100 overflow-hidden">
+                            <img src="{{ asset('storage/' . Auth::user()->user_cover) }}" 
+                                alt="{{ Auth::user()->name }}" 
+                                class="h-full w-full object-cover rounded-full">
+                        </div>
+                        <span class="hidden md:inline-block font-medium">{{ Auth::user()->name }}</span>
+                    @else
+                        <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
+                            <span class="text-indigo-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                        </div>
+                        <span class="hidden md:inline-block font-medium">{{ Auth::user()->name }}</span>
+                    @endif
                 </button>
             </div>
+            
         </div>
     </div>
 </header>

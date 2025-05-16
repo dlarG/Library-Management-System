@@ -9,6 +9,7 @@
             <span class="ml-2 text-xl font-bold text-gray-900">LibraLynx</span>
         </div>
         <button id="closeSidebar" class="md:hidden text-gray-500 hover:text-gray-700">
+            <!-- Fix the close button to show X icon -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -17,9 +18,17 @@
 
     <!-- User Profile -->
     <div class="p-4 border-b border-gray-200 flex items-center space-x-3">
-        <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-            <span class="text-indigo-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
-        </div>
+        @if(Auth::user()->user_cover)
+            <div class="h-10 w-10 rounded-full overflow-hidden border-2 border-indigo-100">
+                <img src="{{ asset('storage/' . Auth::user()->user_cover) }}" 
+                     alt="{{ Auth::user()->name }}" 
+                     class="h-full w-full object-cover">
+            </div>
+        @else
+            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                <span class="text-indigo-600 font-medium">{{ substr(Auth::user()->name, 0, 1) }}</span>
+            </div>
+        @endif
         <div>
             <p class="font-medium text-gray-800">{{ Auth::user()->name }}</p>
             <p class="text-xs text-gray-500">Administrator</p>

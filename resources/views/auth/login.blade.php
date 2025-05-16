@@ -74,7 +74,7 @@
 
                 <!-- Email Field -->
                 <div class="space-y-1">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                    <label for="login" class="block text-sm font-medium text-gray-700">Email or username</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
@@ -82,9 +82,9 @@
                                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                             </svg>
                         </div>
-                        <input id="email" name="email" type="email" value="{{ old('email') }}" required autocomplete="email"
+                        <input id="login" name="login" type="text" value="{{ old('login') }}" required autocomplete="email"
                             class="input-field block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
-                            placeholder="your@email.com">
+                            placeholder="your@gmail.com">
                     </div>
                 </div>
 

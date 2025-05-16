@@ -9,4 +9,9 @@ class Wishlist extends Model
 {
     use HasFactory;
     protected $table = 'wishlists';
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

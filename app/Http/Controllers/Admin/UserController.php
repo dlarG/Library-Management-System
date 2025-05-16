@@ -94,8 +94,8 @@ class UserController extends Controller
             if ($user->user_cover) {
                 Storage::disk('public')->delete($user->user_cover);
             }
-            $path = $request->file('user_cover')->store('user-covers', 'public');
-            $updateData['user_cover'] = $path;
+            $path = $request->file('user_cover')->store('user_covers', 'public');
+            $user->user_cover = $path;
         }
 
         $user->update($updateData);

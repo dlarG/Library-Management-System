@@ -3,31 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title') | Library Management System</title>
+    <title>@yield('title') | LibraLynx</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        /* Reuse the same styles as admin */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f9fafb;
+        .librarian-layout {
+            --primary-color: #4f46e5;
+            --primary-light: #e0e7ff;
         }
-        .sidebar {
+        
+        .librarian-layout .sidebar {
             transition: all 0.3s ease;
             transform: translateX(-100%);
-            @apply border-r border-teal-100;
         }
-        .sidebar-open {
+        
+        .librarian-layout .sidebar-open {
             transform: translateX(0);
         }
-        .active-nav {
-            background-color: #ccfbf1;
-            color: #4f46e5;
-            border-left: 4px solid #0d9488;
+        
+        .librarian-layout .active-nav {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary-color);
         }
-        .active-nav svg {
-            color: #4f46e5;
-        }
-        .overlay {
+        
+        .librarian-layout .overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -37,33 +35,28 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 40;
         }
-        .overlay-open {
-            display: block;
-        }
+        
         @media (min-width: 768px) {
-            .sidebar {
+            .librarian-layout .sidebar {
                 transform: translateX(0);
             }
-            .overlay {
+            .librarian-layout .overlay {
                 display: none !important;
             }
-        }
-        .btn-primary {
-            @apply bg-teal-600 hover:bg-teal-700 text-white;
         }
     </style>
     @stack('styles')
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="librarian-layout flex h-screen overflow-hidden">
     <!-- Mobile overlay -->
     <div class="overlay" id="overlay"></div>
 
-    <!-- Librarian Sidebar -->
+    <!-- Include Sidebar -->
     @include('layouts.partials.librarian-sidebar')
 
     <!-- Main Content -->
     <div class="flex-1 flex flex-col overflow-hidden">
-        <!-- Librarian Navbar -->
+        <!-- Include Top Navigation -->
         @include('layouts.partials.librarian-navbar')
 
         <!-- Main Content Area -->
@@ -72,9 +65,10 @@
         </main>
     </div>
 
-    <!-- Reuse the same scripts -->
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        // Same script as admin for sidebar functionality
+        // Sidebar toggle logic similar to admin
         document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
             const overlay = document.getElementById('overlay');
@@ -82,7 +76,7 @@
             const closeSidebarBtn = document.getElementById('closeSidebar');
 
             // Open sidebar
-            openSidebarBtn.addEventListener('click', function() {
+            openSidebarBtn?.addEventListener('click', function() {
                 sidebar.classList.add('sidebar-open');
                 overlay.classList.add('overlay-open');
                 document.body.style.overflow = 'hidden';
@@ -95,37 +89,10 @@
                 document.body.style.overflow = '';
             }
 
-            closeSidebarBtn.addEventListener('click', closeSidebar);
-            overlay.addEventListener('click', closeSidebar);
-
-            // Close sidebar when clicking outside on mobile
-            document.addEventListener('click', function(event) {
-                if (window.innerWidth < 768 && 
-                    !sidebar.contains(event.target) && 
-                    !openSidebarBtn.contains(event.target)) {
-                    closeSidebar();
-                }
-            });
-
-            // Close sidebar when pressing Escape key
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    closeSidebar();
-                }
-            });
-
-            // Auto-close sidebar when clicking a nav link on mobile
-            const navLinks = document.querySelectorAll('nav a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    if (window.innerWidth < 768) {
-                        closeSidebar();
-                    }
-                });
-            });
+            closeSidebarBtn?.addEventListener('click', closeSidebar);
+            overlay?.addEventListener('click', closeSidebar);
         });
     </script>
-    
     @stack('scripts')
 </body>
 </html>
