@@ -50,4 +50,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Loan::class);
     }
+    public function fines()
+    {
+        return $this->hasMany(Fine::class);
+    }
+    public function wishlist()
+    {
+        return $this->belongsToMany(Book::class, 'wishlists')
+            ->using(Wishlist::class)
+            ->withTimestamps();
+    }
 }

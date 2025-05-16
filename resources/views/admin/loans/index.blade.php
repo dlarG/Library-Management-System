@@ -101,12 +101,12 @@
                             </button>
                             
                             <!-- Dropdown menu -->
-                            <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50 dropdown-menu" 
-                                id="dropdown-{{ $loan->id }}"
-                                style="bottom: auto; top: unset;">
+                            <div class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-[1000] dropdown-menu" 
+                                    id="dropdown-{{ $loan->id }}"
+                                    style="position: absolute; transform: translate(0px, 34px);">
                                 <div class="py-1" role="menu">
                                     <!-- Remind Button -->
-                                    <form action="{{--{{ route('admin.loans.remind', $loan) }}--}}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <form action="{{ route('admin.loans.remind', $loan) }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         @csrf
                                         <button type="submit" class="w-full text-left">
                                             ⏰ Remind

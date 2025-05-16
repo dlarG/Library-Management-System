@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     use HasFactory;
+    protected $fillable = ['fine_id', 'amount', 'method'];
+
+    public function fine()
+    {
+        return $this->belongsTo(Fine::class);
+    }
 }

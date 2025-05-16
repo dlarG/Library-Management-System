@@ -45,4 +45,8 @@ class Book extends Model
     {
         return $this->hasMany(Loan::class);
     }
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
 }

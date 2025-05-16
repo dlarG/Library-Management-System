@@ -30,7 +30,8 @@ class VerificationController extends Controller
         // Redirect based on role
         if ($user->roleType === 'admin') {
             return redirect()->route('admin.dashboard')->with('success', 'Email verified successfully!');
-        } else if($user->roleType === 'librarian') {
+        } 
+        else if ($user->roleType === 'librarian') {
             return redirect()->route('librarian.dashboard')->with('success', 'Email verified successfully!');
         }
         else {

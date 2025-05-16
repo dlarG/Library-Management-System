@@ -65,15 +65,25 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Overdue Books</p>
-                    <p class="text-3xl font-bold text-gray-800 mt-1">{{ rand(5, 30) }}</p>
-                    <p class="text-xs text-red-500 mt-1">
-                        <span class="font-medium">+{{ rand(1, 5) }}</span> since yesterday
+                    <p class="text-3xl font-bold text-gray-800 mt-1">
+                        {{ App\Models\Loan::where('due_date', '<', now())
+                            ->where('status', '!=', 'returned')
+                            ->count() }}
                     </p>
-                </div>
-                <div class="h-12 w-12 rounded-full bg-red-50 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    @php
+                        $yesterdayCount = App\Models\Loan::whereDate('due_date', today()->subDay())
+                            ->where('status', '!=', 'returned')
+                            ->count();
+                        $todayCount = App\Models\Loan::whereDate('due_date', today())
+                            ->where('status', '!=', 'returned')
+                            ->count();
+                        $difference = $todayCount - $yesterdayCount;
+                    @endphp
+                    <p class="text-xs mt-1 @if($difference > 0) text-red-500 @else text-green-500 @endif">
+                        <span class="font-medium">
+                            @if($difference > 0)+{{ $difference }}@else{{ $difference }}@endif
+                        </span> since yesterday
+                    </p>
                 </div>
             </div>
         </div>
@@ -87,51 +97,31 @@
                 <h2 class="text-lg font-medium text-gray-800">Recent Activity</h2>
             </div>
             <div class="divide-y divide-gray-200">
+                @foreach(App\Models\Loan::with(['book', 'user'])->latest()->take(5)->get() as $loan)
                 <div class="p-6 hover:bg-gray-50">
                     <div class="flex items-start">
                         <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="font-medium">New book loan</p>
-                            <p class="text-sm text-gray-600">"The Silent Patient" borrowed by Sarah Johnson</p>
-                            <p class="text-xs text-gray-500 mt-1">2 hours ago</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6 hover:bg-gray-50">
-                    <div class="flex items-start">
-                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-4">
+                            @if($loan->status === 'returned')
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
-                        </div>
-                        <div>
-                            <p class="font-medium">Book returned</p>
-                            <p class="text-sm text-gray-600">"Educated" by Tara Westover returned</p>
-                            <p class="text-xs text-gray-500 mt-1">5 hours ago</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-6 hover:bg-gray-50">
-                    <div class="flex items-start">
-                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            @else
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                             </svg>
+                            @endif
                         </div>
                         <div>
-                            <p class="font-medium">New book added</p>
-                            <p class="text-sm text-gray-600">"Project Hail Mary" by Andy Weir added to collection</p>
-                            <p class="text-xs text-gray-500 mt-1">Yesterday</p>
+                            <p class="font-medium">{{ $loan->status === 'returned' ? 'Book Returned' : 'New Loan' }}</p>
+                            <p class="text-sm text-gray-600">"{{ $loan->book->title }}" {{ $loan->status === 'returned' ? 'returned by' : 'borrowed by' }} {{ $loan->user->name }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ $loan->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
             <div class="p-4 border-t border-gray-200 text-center">
-                <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all activity</a>
+                <a href="{{route('admin.loans.index')}}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all activity</a>
             </div>
         </div>
 
@@ -179,10 +169,11 @@
 
     <!-- Overdue Books -->
     <div class="mt-8 bg-white rounded-lg shadow overflow-hidden">
-        <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-            <h2 class="text-lg font-medium text-gray-800">Overdue Books</h2>
-            <a href="{{--{{ route('loans.overdue') }}--}}" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View All</a>
-        </div>
+        @foreach(App\Models\Loan::with(['book', 'user'])
+        ->where('due_date', '<', now())
+        ->where('status', '!=', 'returned')
+        ->latest()
+        ->get() as $loan)
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -199,92 +190,54 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-md flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
+                                    @if($loan->book->cover_image)
+                                        <img src="{{ asset('storage/' . $loan->book->cover_image) }}" 
+                                            alt="{{ $loan->book->title }} Cover"
+                                            class="w-full h-full object-cover">
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                        </svg>
+                                    @endif
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">The Midnight Library</div>
-                                    <div class="text-sm text-gray-500">Matt Haig</div>
+                                    <div class="text-sm font-medium text-gray-900">{{ $loan->book->title }}</div>
+                                    <div class="text-sm text-gray-500">{{ $loan->book->author->name }}</div>
                                 </div>
                             </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">Michael Brown</div>
-                            <div class="text-sm text-gray-500">michael@example.com</div>
+                            <div class="text-sm text-gray-900">{{ $loan->user->name }}</div>
+                            <div class="text-sm text-gray-500">{{ $loan->user->email }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">May 15, 2023</div>
+                            <div class="text-sm text-gray-900">{{ $loan->due_date->format('M d, Y') }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">8 days</span>
+                            @php
+                                $daysOverdue = now()->diffInDays($loan->due_date);
+                            @endphp
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                {{ $daysOverdue }} day{{ $daysOverdue > 1 ? 's' : '' }} overdue
+                            </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Remind</a>
-                            <a href="#" class="text-red-600 hover:text-red-900">Fine</a>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-md flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Atomic Habits</div>
-                                    <div class="text-sm text-gray-500">James Clear</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">Emily Davis</div>
-                            <div class="text-sm text-gray-500">emily@example.com</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">May 18, 2023</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">5 days</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Remind</a>
-                            <a href="#" class="text-red-600 hover:text-red-900">Fine</a>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-md flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                    </svg>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Where the Crawdads Sing</div>
-                                    <div class="text-sm text-gray-500">Delia Owens</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">Robert Wilson</div>
-                            <div class="text-sm text-gray-500">robert@example.com</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">May 20, 2023</div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">3 days</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-3">Remind</a>
-                            <a href="#" class="text-red-600 hover:text-red-900">Fine</a>
+                            <form method="POST" action="{{ route('admin.loans.remind', $loan) }}">
+                                @csrf
+                                <button type="submit" class="text-indigo-600 hover:text-indigo-900 mr-3">Remind</button>
+                            </form>
+                            
+                            <form method="POST" action="{{ route('admin.fines.store', $loan) }}" 
+                                onsubmit="return confirm('Are you sure you want to calculate fines for this loan?')">
+                                @csrf
+                                <button type="submit" class="text-red-600 hover:text-red-900">Fine</button>
+                            </form>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+        @endforeach
     </div>
 
     <!-- Recent Members -->

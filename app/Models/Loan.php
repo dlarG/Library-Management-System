@@ -46,4 +46,8 @@ class Loan extends Model
         
         return $daysOverdue * $dailyRate;
     }
+    public function fines()
+    {
+        return $this->hasMany(Fine::class);
+    }
 }

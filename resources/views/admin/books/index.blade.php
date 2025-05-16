@@ -24,12 +24,41 @@
 @endif
 <div class="mb-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold text-gray-800">Books Management</h1>
-    <a href="{{ route('admin.books.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 flex items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-        </svg>
-        Add Book
-    </a>
+    <div class="relative group" x-data="{ open: false }" @mouseover="open = true" @mouseleave="open = false">
+        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center transition-colors duration-200">
+            Add New
+            <svg class="w-4 h-4 ml-1 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+        </button>
+        
+        <div class="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 z-10 transition-all duration-300 origin-top"
+            x-show="open"
+            x-cloak
+            style="display: none;"
+            @mouseover="open = true"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0 transform scale-95"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-95">
+            <!-- Dropdown arrow -->
+            <div class="absolute -top-1.5 right-3 w-3 h-3 bg-white transform rotate-45 border-t border-l border-gray-100"></div>
+            
+            <div class="relative bg-white rounded-lg">
+                <a href="{{ route('admin.books.create') }}" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg">
+                    Add Book
+                </a>
+                <a href="{{ route('admin.authors.create') }}" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200">
+                    Add Author
+                </a>
+                <a href="{{ route('admin.publishers.create') }}" class="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors duration-200">
+                    Add Publisher
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="bg-white rounded-lg shadow overflow-hidden">
@@ -112,6 +141,7 @@
     </div>
 </div>
 @push('scripts')
+<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <script>
     function hideToast() {
         const toast = document.getElementById('successToast');

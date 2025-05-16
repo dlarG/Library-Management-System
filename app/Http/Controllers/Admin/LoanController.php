@@ -7,6 +7,7 @@ use App\Models\Book;
 use App\Models\Loan;
 use App\Models\Setting;
 use App\Models\User;
+use App\Notifications\RemindDueDate;
 use Database\Seeders\BooksTableSeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,8 +46,9 @@ class LoanController extends Controller
             'quantity' => 'required|integer|min:1',
             'due_date' => 'required|date|after:today'
         ]);
-
+    
         try {
+            $settings = Setting::firstOrFail();
             $book = Book::findOrFail($request->book_id);
             
             if($book->available < $request->quantity) {
@@ -54,13 +56,14 @@ class LoanController extends Controller
                     ->withInput()
                     ->withErrors(['quantity' => 'Not enough available copies. Available: ' . $book->available]);
             }
+    
             $currentLoans = Loan::where('user_id', $request->user_id)
                 ->whereIn('status', ['borrowed', 'overdue'])
-                ->count();
-
-            if ($currentLoans + $request->quantity > $settings->max_books_per_user) {
-                return back()->withErrors([
-                    'error' => "User cannot borrow more than {$settings->max_books_per_user} books"
+                ->sum('quantity');
+    
+            if (($currentLoans + $request->quantity) > $settings->max_books_per_user) {
+                return back()->withInput()->withErrors([
+                    'user_id' => "User cannot borrow more than {$settings->max_books_per_user} books total. Current loans: {$currentLoans}"
                 ]);
             }
             DB::transaction(function () use ($request, $book) {
@@ -133,5 +136,20 @@ class LoanController extends Controller
     public function destroy(Loan $loan)
     {
         //
+    }
+    public function sendReminder(Loan $loan)
+    {
+        try {
+            $user = $loan->user;
+            $settings = Setting::first();
+            $overdueDays = now()->diffInDays($loan->due_date);
+            
+            // Send email notification
+            $user->notify(new RemindDueDate($loan, $overdueDays, $settings));
+            
+            return back()->with('success', "Reminder sent to {$user->email}");
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to send reminder: ' . $e->getMessage()]);
+        }
     }
 }

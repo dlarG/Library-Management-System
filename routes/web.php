@@ -1,12 +1,21 @@
 <?php
 
+use App\Http\Controllers\Admin\AuthorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\FineController;
+use App\Http\Controllers\Admin\FineControllerr;
 use App\Http\Controllers\Admin\LoanController;
+use App\Http\Controllers\Admin\PublisherController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Member\BookController as MemberBookController;
+use App\Http\Controllers\Member\DashboardController;
+use App\Http\Controllers\Member\LoanController as MemberLoanController;
+use App\Http\Controllers\Member\ProfileController;
+use App\Http\Controllers\Member\WishlistController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Route;
@@ -86,7 +95,19 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::delete('/users/{user}/remove-image', [UserController::class, 'removeImage'])
         ->name('users.remove-image');
     
-    // Add other admin-only routes here
+    // Route for authors section
+    Route::resource('authors', AuthorController::class)->except(['show']);
+    Route::get('authors/create', [AuthorController::class, 'create'])->name('authors.create');
+    Route::post('authors', [AuthorController::class, 'store'])->name('authors.store');
+
+    //Route for publisher
+    Route::resource('publishers', PublisherController::class)->except(['show']);
+    // Specifically for storing 
+    Route::get('publishers/create', [PublisherController::class, 'create'])->name('publishers.create');
+    Route::post('publishers', [PublisherController::class, 'store'])->name('publishers.store');
+
+    Route::post('/fines', [FineControllerr::class, 'store'])->name('fines.store');
+    Route::post('/loans/{loan}/remind', [LoanController::class, 'sendReminder'])->name('loans.remind');
 });
 
 
@@ -109,11 +130,24 @@ Route::middleware(['auth', 'verified', 'role:librarian'])->prefix('librarian')->
 
 // Member Routes
 Route::middleware(['auth', 'verified', 'role:member'])->prefix('member')->name('member.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('member.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/loans', [\App\Http\Controllers\Member\LoanController::class, 'index'])->name('loans.index');
+    Route::get('/loans/{loan}', [\App\Http\Controllers\Member\LoanController::class, 'show'])->name('loans.show');
     
-    // Add other member-only routes here
+    // Books
+    Route::get('/books', [\App\Http\Controllers\Member\BookController::class, 'index'])->name('books.index');
+    Route::get('/books/{book}', [\App\Http\Controllers\Member\BookController::class, 'show'])->name('books.show');
+    
+    // Wishlist
+    Route::get('/wishlist', [\App\Http\Controllers\Member\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{book}', [\App\Http\Controllers\Member\WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/wishlist/{wishlist}', [\App\Http\Controllers\Member\WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    
+    // Profile
+    Route::get('/profile', [\App\Http\Controllers\Member\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\Member\ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/member/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 });
 
 
