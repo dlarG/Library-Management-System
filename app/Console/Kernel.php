@@ -19,8 +19,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
+            // Get grace period from settings (ensure you have a Settings model)
+            $gracePeriod = \App\Models\Setting::first()->grace_period ?? 0;
+            
             Loan::where('status', 'borrowed')
-                ->where('due_date', '<', now()->subDays(config('settings.grace_period')))
+                ->whereDate('due_date', '<', now()->subDays($gracePeriod))
                 ->update(['status' => 'overdue']);
         })->daily();
     }

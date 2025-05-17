@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Fine extends Model
 {
     use HasFactory;
-    protected $fillable = ['loan_id', 'amount', 'status', 'days_overdue'];
+    protected $fillable = ['user_id', 'loan_id', 'amount', 'status', 'days_overdue'];
 
     public function loan()
     {
@@ -25,6 +25,17 @@ class Fine extends Model
     
     public function getBalanceAttribute()
     {
-        return $this->amount - $this->paid_amount;
+        return $this->amount - $this->payments->sum('amount');
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function getStatusAttribute($value)
+    {
+        if ($this->balance <= 0) {
+            return 'paid';
+        }
+        return $value;
     }
 }

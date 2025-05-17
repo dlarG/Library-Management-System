@@ -43,28 +43,28 @@
             <span>Dashboard</span>
         </a>
 
-        <a href="{{--{{ route('librarian.loans.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.loans.*') ? 'active-nav' : '' }}">
+        <a href="{{ route('librarian.loans.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.loans.*') ? 'active-nav' : '' }}">
             <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
             </svg>
             <span>Loan Management</span>
         </a>
 
-        <a href="{{--{{ route('librarian.returns.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.returns.*') ? 'active-nav' : '' }}">
+        <a href="{{ route('librarian.returns.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.returns.*') ? 'active-nav' : '' }}">
             <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
             </svg>
             <span>Returns & Fines</span>
         </a>
 
-        <a href="{{--{{ route('librarian.members.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.members.*') ? 'active-nav' : '' }}">
+        <a href="{{ route('librarian.members.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.members.*') ? 'active-nav' : '' }}">
             <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 8 4 4 0 010-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
             </svg>
             <span>Member Management</span>
         </a>
 
-        <a href="{{--{{ route('librarian.reports.index') }}--}}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.reports.*') ? 'active-nav' : '' }}">
+        <a href="{{ route('librarian.reports.index') }}" class="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 {{ request()->routeIs('librarian.reports.*') ? 'active-nav' : '' }}">
             <svg class="h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>

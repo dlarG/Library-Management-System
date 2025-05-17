@@ -15,7 +15,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Active Loans</p>
-                    <p class="text-2xl font-bold text-gray-900">1,234</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ App\Models\Loan::count()}}</p>
                 </div>
                 <div class="p-3 bg-indigo-100 rounded-full">
                     <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,7 +30,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-600">Overdue Books</p>
-                    <p class="text-2xl font-bold text-gray-900">89</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ App\Models\Loan::where("status", "overdue")->count()}}</p>
                 </div>
                 <div class="p-3 bg-red-100 rounded-full">
                     <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -44,8 +44,8 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-gray-600">New Members (30d)</p>
-                    <p class="text-2xl font-bold text-gray-900">45</p>
+                    <p class="text-sm text-gray-600">New Members (7d)</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ App\Models\User::count()}}</p>
                 </div>
                 <div class="p-3 bg-green-100 rounded-full">
                     <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,19 +61,19 @@
         <div class="bg-white p-6 rounded-lg shadow">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
             <div class="space-y-3">
-                <a href="#" class="flex items-center p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                <a href="{{route('librarian.loans.create')}}" class="flex items-center p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
                     <svg class="w-5 h-5 text-indigo-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
                     Process New Loan
                 </a>
-                <a href="#" class="flex items-center p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                <a href="{{route('librarian.members.index')}}" class="flex items-center p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
                     <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                     Manage Returns
                 </a>
-                <a href="#" class="flex items-center p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
+                <a href="{{--{{ route('librarian.members.create')}}--}}" class="flex items-center p-3 text-sm text-gray-700 hover:bg-gray-50 rounded-lg">
                     <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
                     </svg>

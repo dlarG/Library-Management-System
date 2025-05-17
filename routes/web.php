@@ -11,6 +11,10 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Librarian\MemberController;
+use App\Http\Controllers\Librarian\ReportController as LibrarianReportController;
+use App\Http\Controllers\LibrarianLoanController;
 use App\Http\Controllers\Member\BookController as MemberBookController;
 use App\Http\Controllers\Member\DashboardController;
 use App\Http\Controllers\Member\LoanController as MemberLoanController;
@@ -33,9 +37,7 @@ use Illuminate\Http\Request;
 */
 
 // Public Routes
-Route::get('/', function () {
-    return view('welcome');
-})->name('welcome');
+Route::get('/', [HomeController::class, 'index'])->name('welcome');
 
 
 
@@ -121,7 +123,35 @@ Route::middleware(['auth', 'verified', 'role:librarian'])->prefix('librarian')->
         return view('librarian.dashboard');
     })->name('dashboard');
     
-    // Add other librarian-only routes here
+    Route::resource('/loans', LibrarianLoanController::class);
+    
+    Route::prefix('returns')->name('returns.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Librarian\ReturnController::class, 'index'])->name('index');
+        Route::post('/{loan}/fine', [\App\Http\Controllers\Librarian\ReturnController::class, 'applyFine'])->name('apply-fine');
+    });
+
+    Route::prefix('payments')->name('payments.')->group(function () {
+        Route::post('/{fine}', [\App\Http\Controllers\Librarian\PaymentController::class, 'store'])
+             ->name('store');
+    });
+
+    Route::prefix('members')->name('members.')->group(function () {
+        // Create routes come first
+        Route::get('/create', [MemberController::class, 'create'])->name('create');
+        Route::post('/', [MemberController::class, 'store'])->name('store');
+        
+        // Parameterized routes should come after static routes
+        Route::get('/', [MemberController::class, 'index'])->name('index');
+        Route::get('/{user}', [MemberController::class, 'show'])->name('show');
+        Route::get('/{user}/edit', [MemberController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [MemberController::class, 'update'])->name('update');
+        Route::delete('/{user}', [MemberController::class, 'destroy'])->name('destroy');
+    });
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', [LibrarianReportController::class, 'index'])->name('index');
+        Route::get('/generate', [LibrarianReportController::class, 'generate'])->name('generate');
+    });
 });
 
 
@@ -161,4 +191,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/home', function() {
         return view('home');
     })->name('home');
+    
+
 });

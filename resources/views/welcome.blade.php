@@ -14,7 +14,8 @@
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0 flex items-center">
-                        <svg class="h-8 w-8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="
+                        8 text-indigo-600" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                         </svg>
                         <span class="ml-2 text-xl font-bold text-gray-900">LibraLynx</span>
@@ -72,7 +73,8 @@
                             <div class="flex items-center justify-between w-full md:w-auto">
                                 <a href="#">
                                     <span class="sr-only">LibraLynx</span>
-                                    <svg class="h-8 w-auto sm:h-10 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <svg class="
+                                    auto sm:h-10 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
                                     </svg>
                                 </a>
@@ -138,7 +140,35 @@
                 <div class="mt-8">
                     <div class="relative overflow-hidden">
                         <div id="bookCarousel" class="flex transition-transform duration-300 ease-in-out">
-                            <!-- Book items will be added here by JavaScript -->
+                            @foreach($featuredBooks as $book)
+                                <div class="flex-shrink-0 w-64 p-4">
+                                    <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+                                        <img class="w-full h-48 object-cover" 
+                                            src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : 'https://via.placeholder.com/150' }}" 
+                                            alt="{{ $book->title }}">
+                                        <div class="p-4 flex-grow">
+                                            <h3 class="text-lg font-semibold text-gray-900">{{ $book->title }}</h3>
+                                            <p class="text-sm text-gray-500">{{ $book->author->name }}</p>
+                                            <p class="mt-2 text-sm text-gray-600">
+                                                {{ Str::limit($book->description, 100) }}
+                                            </p>
+                                        </div>
+                                        <div class="px-4 py-3 bg-gray-50 text-right">
+                                            @auth
+                                            <a href="{{ route('books.show', $book) }}" 
+                                            class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                                                View Details
+                                            </a>
+                                            @else
+                                            <a href="{{ route('login') }}" 
+                                            class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+                                                Login to Borrow
+                                            </a>
+                                            @endauth
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                         <button id="prevBtn" class="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-2 shadow-md z-10 ml-2 focus:outline-none">
                             <svg class="h-6 w-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,7 +319,7 @@
                 </a>
             </div>
             <p class="mt-8 text-center text-base text-gray-400">
-                &copy; 2023 LibraLynx. All rights reserved.
+                &copy; 2025 Gerald Catina. All rights reserved.
             </p>
             <form action="{{route('logout')}}" method="POST">
                 @csrf
@@ -300,101 +330,31 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Book carousel functionality
-            const bookCarousel = document.getElementById('bookCarousel');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            let currentIndex = 0;
-            
-            // Sample book data - in a real app, this would come from your backend
-            const books = [
-                {
-                    title: "The Midnight Library",
-                    author: "Matt Haig",
-                    cover: "https://images-na.ssl-images-amazon.com/images/I/81JcG5O5YBL.jpg",
-                    description: "Between life and death there is a library, and within that library, the shelves go on forever."
-                },
-                {
-                    title: "Project Hail Mary",
-                    author: "Andy Weir",
-                    cover: "https://images-na.ssl-images-amazon.com/images/I/91p5b0UgbKL.jpg",
-                    description: "A lone astronaut must save the earth from disaster in this incredible new science-based thriller."
-                },
-                {
-                    title: "Klara and the Sun",
-                    author: "Kazuo Ishiguro",
-                    cover: "https://images-na.ssl-images-amazon.com/images/I/71b6UwSlURL.jpg",
-                    description: "What does it mean to love? A beautiful, heartbreaking novel about an unforgettable narrator."
-                },
-                {
-                    title: "The Four Winds",
-                    author: "Kristin Hannah",
-                    cover: "https://images-na.ssl-images-amazon.com/images/I/71kxa1-0mfL.jpg",
-                    description: "An epic novel of love and heroism and hope, set during the Great Depression."
-                },
-                {
-                    title: "Atomic Habits",
-                    author: "James Clear",
-                    cover: "https://images-na.ssl-images-amazon.com/images/I/91bYsX41DVL.jpg",
-                    description: "Tiny Changes, Remarkable Results: An easy & proven way to build good habits & break bad ones."
-                }
-            ];
-            
-            // Render books in carousel
-            function renderBooks() {
-                bookCarousel.innerHTML = '';
-                books.forEach((book, index) => {
-                    const bookElement = document.createElement('div');
-                    bookElement.className = 'flex-shrink-0 w-64 p-4';
-                    bookElement.innerHTML = `
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
-                            <img class="w-full h-48 object-cover" src="${book.cover}" alt="${book.title}">
-                            <div class="p-4 flex-grow">
-                                <h3 class="text-lg font-semibold text-gray-900">${book.title}</h3>
-                                <p class="text-sm text-gray-500">${book.author}</p>
-                                <p class="mt-2 text-sm text-gray-600">${book.description}</p>
-                            </div>
-                            <div class="px-4 py-3 bg-gray-50 text-right">
-                                <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">
-                                    Reserve
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    bookCarousel.appendChild(bookElement);
-                });
-                
-                // Set initial position
-                updateCarousel();
-            }
-            
-            // Update carousel position
-            function updateCarousel() {
-                const offset = -currentIndex * 272; // 64 * 4 + 16 (margin)
-                bookCarousel.style.transform = `translateX(${offset}px)`;
-            }
-            
-            // Event listeners
-            prevBtn.addEventListener('click', () => {
-                if (currentIndex > 0) {
-                    currentIndex--;
-                    updateCarousel();
-                }
-            });
-            
-            nextBtn.addEventListener('click', () => {
-                if (currentIndex < books.length - 1) {
-                    currentIndex++;
-                    updateCarousel();
-                }
-            });
-            
-            // Initialize
-            renderBooks();
-            
-            // Mobile menu toggle (handled by Alpine.js)
-            // Search functionality could be added here
-        });
+    const bookCarousel = document.getElementById('bookCarousel');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentIndex = 0;
+    const bookCount = {{ count($featuredBooks) }};
+
+    function updateCarousel() {
+        const offset = -currentIndex * 272;
+        bookCarousel.style.transform = `translateX(${offset}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateCarousel();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < bookCount - 1) {
+            currentIndex++;
+            updateCarousel();
+        }
+    });
+});
     </script>
 </body>
 </html>
