@@ -106,7 +106,7 @@
                                  id="dropdown-{{ $loan->id }}">
                                 <div class="py-1" role="menu">
                                     <!-- Remind Button -->
-                                    <form action="{{ route('librarian.loans.remind', $loan) }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <form action="{{--{{ route('librarian.loans.remind', $loan) }}--}}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         @csrf
                                         <button type="submit" class="w-full text-left">⏰ Remind</button>
                                     </form>
@@ -120,7 +120,7 @@
                                         💰 Fine
                                     </button>
                                     <form id="fine-form-{{ $loan->id }}" 
-                                          action="{{ route('librarian.loans.fine', $loan) }}" 
+                                          action="{{--{{ route('librarian.loans.fine', $loan) }}--}}" 
                                           method="POST" 
                                           class="hidden">
                                         @csrf
@@ -128,7 +128,7 @@
                     
                                     <!-- Mark Returned Button -->
                                     @if($loan->status === 'borrowed')
-                                    <form action="{{ route('librarian.loans.update', $loan) }}" method="POST" class="block px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100">
+                                    <form action="{{--{{ route('librarian.loans.update', $loan) }}--}}" method="POST" class="block px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100">
                                         @csrf @method('PUT')
                                         <button type="submit" class="w-full text-left">✅ Mark Returned</button>
                                     </form>
@@ -196,7 +196,7 @@
                              class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 z-50">
                             <div class="py-1" role="menu">
                                 <!-- Dropdown items same as desktop -->
-                                <form action="{{ route('librarian.loans.remind', $loan) }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <form action="{{--{{ route('librarian.loans.remind', $loan) }}--}}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     @csrf
                                     <button type="submit" class="w-full text-left">⏰ Remind</button>
                                 </form>
@@ -210,7 +210,7 @@
                                 </button>
                                 
                                 @if($loan->status === 'borrowed')
-                                <form action="{{ route('librarian.loans.update', $loan) }}" method="POST" class="block px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100">
+                                <form action="{{--{{ route('librarian.loans.update', $loan) }}--}}" method="POST" class="block px-4 py-2 text-sm text-indigo-600 hover:bg-gray-100">
                                     @csrf @method('PUT')
                                     <button type="submit" class="w-full text-left">✅ Mark Returned</button>
                                 </form>
@@ -229,7 +229,7 @@
         {{ $loans->onEachSide(1)->links() }}
     </div>
 </div>
-
+@endsection
 @push('styles')
 <style>
     @media (max-width: 640px) {
@@ -254,7 +254,6 @@
         }
     }
 </style>
-@endsection
 @endpush
 
 @push('scripts')
@@ -345,19 +344,17 @@
         filterLoans();
 
         // Dropdown handlers
-        document.querySelectorAll('[data-dropdown-toggle]').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const dropdownId = this.getAttribute('data-dropdown-toggle');
-                const dropdown = document.getElementById(dropdownId);
-                dropdown.classList.toggle('hidden');
-            });
-        });
-
-        // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
+            // Desktop dropdowns
             document.querySelectorAll('.dropdown-menu').forEach(dropdown => {
                 if (!dropdown.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
+            
+            // Mobile dropdowns
+            document.querySelectorAll('.mobile-dropdown').forEach(dropdown => {
+                if (!dropdown.contains(e.target) && !e.target.closest('[onclick*="toggleMobileDropdown"]')) {
                     dropdown.classList.add('hidden');
                 }
             });
@@ -368,5 +365,62 @@
         const dropdown = document.getElementById(dropdownId);
         dropdown.classList.toggle('hidden');
         
+        // Close other mobile dropdowns
         document.querySelectorAll('.mobile-dropdown').forEach(d => {
-            if (d.id !== dropdownId) d.classList.add('hidden
+            if (d.id !== dropdownId) d.classList.add('hidden');
+        });
+    }
+
+    // Enhanced filter function
+    function filterElements(elements, searchTerm, selectedStatus) {
+        let hasVisible = false;
+        
+        elements.forEach(element => {
+            const user = element.dataset.user.toLowerCase();
+            const book = element.dataset.book.toLowerCase();
+            const loanDate = element.dataset.loanDate;
+            const dueDate = element.dataset.dueDate;
+            const status = element.dataset.status;
+
+            const matchesSearch = user.includes(searchTerm) || 
+                                book.includes(searchTerm) || 
+                                loanDate.includes(searchTerm) || 
+                                dueDate.includes(searchTerm) || 
+                                status.includes(searchTerm);
+
+            const matchesStatus = !selectedStatus || status === selectedStatus;
+
+            if (matchesSearch && matchesStatus) {
+                element.style.display = '';
+                hasVisible = true;
+            } else {
+                element.style.display = 'none';
+            }
+        });
+
+        return hasVisible;
+    }
+    function handleNoResults(hasAnyResults) {
+        const noResults = document.getElementById('noResults');
+        const container = document.querySelector('.sm\\:hidden') || document.querySelector('tbody');
+        
+        if (!hasAnyResults && !noResults) {
+            const message = document.createElement('div');
+            message.id = 'noResults';
+            message.className = 'p-4 text-center text-gray-500';
+            message.textContent = 'No loans found matching your criteria';
+            
+            if (document.querySelector('.sm\\:hidden')) {
+                // Mobile view
+                document.querySelector('.sm\\:hidden').appendChild(message);
+            } else {
+                // Desktop view
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" class="px-6 py-4 text-center text-gray-500">No loans found matching your criteria</td>`;
+                document.querySelector('tbody').appendChild(row);
+            }
+        } else if (hasAnyResults && noResults) {
+            noResults.remove();
+        }
+    }
+</script>

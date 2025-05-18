@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<div class="sidebar fixed md:relative z-50 w-64 bg-white shadow-lg flex flex-col" id="sidebar">
+<div class="sidebar fixed md:relative z-50 w-64 bg-white shadow-lg flex flex-col" id="sidebar" style="height: 100%;">
     <!-- Logo -->
     <div class="p-4 border-b border-gray-200 flex justify-between items-center">
         <div class="flex items-center space-x-2">
