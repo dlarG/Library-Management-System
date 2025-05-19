@@ -7,6 +7,7 @@ use App\Models\Loan;
 use App\Models\Fine;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -35,6 +36,12 @@ class ReportController extends Controller
                         ->with(['user', 'book'])
                         ->get()
         };
+
+        // Check if PDF download is requested
+        if ($request->has('download')) {
+            $pdf = Pdf::loadView('librarian.reports.pdf', compact('reportData', 'validated'));
+            return $pdf->download($validated['type'] . '-report-' . now()->format('Ymd') . '.pdf');
+        }
 
         return view('librarian.reports.show', compact('reportData', 'validated'));
     }

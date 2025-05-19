@@ -61,10 +61,10 @@
             <div class="w-full sm:w-44">
               <select id="roleFilter"
                 class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                <option value="">🎭 All Roles</option>
-                <option value="admin">🛡️ Admin</option>
-                <option value="librarian">📚 Librarian</option>
-                <option value="member">👤 Member</option>
+                <option value="">All Roles</option>
+                <option value="admin"> Admin</option>
+                <option value="librarian"> Librarian</option>
+                <option value="member"> Member</option>
               </select>
             </div>
         
@@ -72,9 +72,9 @@
             <div class="w-full sm:w-44">
               <select id="statusFilter"
                 class="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition">
-                <option value="">🔄 All Statuses</option>
-                <option value="Verified">✅ Verified</option>
-                <option value="Unverified">❌ Unverified</option>
+                <option value=""> All Statuses</option>
+                <option value="Verified"> Verified</option>
+                <option value="Unverified"> Unverified</option>
               </select>
             </div>
           </div>
