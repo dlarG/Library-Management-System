@@ -13,7 +13,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Report Type</label>
-                    <select name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    <select style="height: 40px;" name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
                         <option value="loans">Loan History</option>
                         <option value="fines">Fines Collected</option>
                         <option value="overdue">Overdue Books</option>
@@ -23,8 +23,8 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Date Range</label>
                     <div class="mt-1 flex gap-2">
-                        <input type="date" name="start_date" class="rounded-md border-gray-300 shadow-sm" required>
-                        <input type="date" name="end_date" class="rounded-md border-gray-300 shadow-sm" required>
+                        <input style="height: 40px;" type="date" name="start_date" class="rounded-md border-gray-300 shadow-sm" required>
+                        <input style="height: 40px;" type="date" name="end_date" class="rounded-md border-gray-300 shadow-sm" required>
                     </div>
                 </div>
             </div>

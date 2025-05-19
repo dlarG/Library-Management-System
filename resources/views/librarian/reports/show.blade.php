@@ -72,8 +72,8 @@
                         @forelse($reportData as $fine)
                             <tr>
                                 <td class="px-6 py-4 whitespace-nowrap">{{ $fine->user->name }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">${{ number_format($fine->amount, 2) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">{{ $fine->paid_at?->format('M d, Y') ?? 'Unpaid' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">₱{{ number_format($fine->amount, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ $fine->status ? 'paid' : 'Unpaid' }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     Book: {{ $fine->loan->book->title }}<br>
                                     Due Date: {{ $fine->loan->due_date->format('M d, Y') }}
