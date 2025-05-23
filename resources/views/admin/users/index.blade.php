@@ -145,7 +145,7 @@
                                 Verified
                             </span>
                         @else
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
                                 Pending
                             </span>
                         @endif
@@ -154,10 +154,10 @@
                     <!-- Role Column -->
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            @if($user->roleType === 'Admin') bg-purple-100 text-purple-800
-                            @elseif($user->roleType === 'Librarian') bg-blue-100 text-blue-800
+                            @if($user->roleType === 'admin') bg-orange-100 text-orange-800
+                            @elseif($user->roleType === 'librarian') bg-blue-100 text-blue-800
                             @else bg-gray-100 text-gray-800 @endif">
-                            {{ $user->roleType }}
+                            {{ ucfirst($user->roleType) }}
                         </span>
                     </td>
                     

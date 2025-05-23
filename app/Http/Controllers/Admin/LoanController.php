@@ -26,7 +26,7 @@ class LoanController extends Controller
                   ->orWhere('email', 'like', "%{$request->search}%");
             }))
             ->orderBy('due_date', 'asc')
-            ->paginate(6);
+            ->paginate(8);
         return view('admin.loans.index', compact('loans'));
     }
 

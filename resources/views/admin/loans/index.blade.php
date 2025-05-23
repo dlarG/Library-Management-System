@@ -61,7 +61,7 @@
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-200" id="loansBody">
                 @foreach($loans as $loan)
                 <tr class="loan-row hover:bg-gray-50 transition-colors duration-150" 
                 data-user="{{ strtolower($loan->user->name) }}"
